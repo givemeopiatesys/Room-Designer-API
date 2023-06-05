@@ -17,8 +17,10 @@ export class UsersService {
 
   async createUser(userDto: UserDto) {
     await this.isEmailExists(userDto.email);
-
-    const user = await this.userRepository.create(userDto);
+    const user = await this.userRepository.create({
+      ...userDto,
+      password: hashify(userDto.password),
+    });
     return await this.userRepository.save(user);
   }
   async loginUser(userDto: UserDto) {

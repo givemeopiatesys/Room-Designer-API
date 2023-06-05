@@ -30,6 +30,7 @@ import { ReviewsModule } from './reviews/reviews.module';
     RoomsModule,
     ItemsModule,
     ReviewsModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
