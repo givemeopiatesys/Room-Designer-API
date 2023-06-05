@@ -13,6 +13,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ItemsService } from './items.service';
 import { Item } from './items.model';
 import { ItemDto } from './dto/item.dto';
+import { BindItemToRoomDTO } from './dto/bind.dto';
 
 @ApiTags('Items')
 @Controller('items')
@@ -28,6 +29,7 @@ export class ItemsController {
   create(@Body() itemDto: ItemDto) {
     return this.itemsService.createItem(itemDto);
   }
+
   @ApiOperation({ summary: 'Get all items' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -49,6 +51,7 @@ export class ItemsController {
   getById(@Param('itemId') itemId: number) {
     return this.itemsService.getById(itemId);
   }
+
   @ApiOperation({ summary: 'Update item by id' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -59,6 +62,18 @@ export class ItemsController {
   updateById(@Param('itemId') itemId: number, @Body() itemDto: ItemDto) {
     return this.itemsService.update(itemId, itemDto);
   }
+
+  @ApiOperation({ summary: 'Update item by id' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: Item,
+  })
+  @Put('bind/:itemId')
+  @HttpCode(HttpStatus.OK)
+  bindToRoom(@Param('itemId') itemId: number, @Body() body: BindItemToRoomDTO) {
+    return this.itemsService.bindToRoom(itemId, body.bindedRoomId);
+  }
+
   @ApiOperation({ summary: 'Delete item by id' })
   @ApiResponse({
     status: HttpStatus.NO_CONTENT,

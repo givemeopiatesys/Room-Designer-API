@@ -9,6 +9,7 @@ import { ItemsModule } from './items/items.module';
 import { Room } from './rooms/rooms.model';
 import { Item } from './items/items.model';
 import { AuthModule } from './auth/auth.module';
+import { ReviewsModule } from './reviews/reviews.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -28,6 +29,7 @@ import { AuthModule } from './auth/auth.module';
     UsersModule,
     RoomsModule,
     ItemsModule,
+    ReviewsModule,
   ],
   controllers: [],
   providers: [],

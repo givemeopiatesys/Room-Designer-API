@@ -1,5 +1,14 @@
-import { Column, PrimaryGeneratedColumn, Entity } from 'typeorm';
+import {
+  Column,
+  PrimaryGeneratedColumn,
+  Entity,
+  ManyToOne,
+  JoinColumn,
+  BeforeInsert,
+  AfterLoad,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { Room } from 'src/rooms/rooms.model';
 
 @Entity('items')
 export class Item {
@@ -11,11 +20,21 @@ export class Item {
   @Column({ nullable: false })
   title: string;
 
-  @ApiProperty({ example: 'Nordic blush, lorem ipsum..', description: 'Item description', })
+  @ApiProperty({
+    example: 'Nordic blush, lorem ipsum..',
+    description: 'Item description',
+  })
   @Column({ unique: true, nullable: false })
   description: string;
 
-  @ApiProperty({ example: '[red,blue,orange]', description: 'Colors which can be item', })
-  @Column(`text`,{  array: true })
+  @ApiProperty({
+    example: '[red,blue,orange]',
+    description: 'Colors which can be item',
+  })
+  @Column('json', { nullable: true })
   colors: string[];
+
+  @ManyToOne(() => Room, (room) => room.items)
+  @JoinColumn()
+  room: Room;
 }

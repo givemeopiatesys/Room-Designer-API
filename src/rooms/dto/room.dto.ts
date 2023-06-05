@@ -1,14 +1,23 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class RoomDto {
   id?: number;
 
   @ApiProperty({
-    example: './room_model_1',
-    description: 'Model path',
+    example: 'агата',
+    description: 'имя комнаты',
   })
-  @IsNotEmpty({ message: 'The model path cannot be empty' })
-  @IsString({ message: 'The model path must be a string' })
-  modelPath: string;
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @IsOptional()
+  @ApiProperty({
+    example: 'крутая комната',
+    description: 'описание комнаты',
+  })
+  @IsNotEmpty()
+  @IsString()
+  description: string;
 }

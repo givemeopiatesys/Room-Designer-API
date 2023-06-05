@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { IsNull } from 'typeorm';
 
 export class ItemDto {
   id?: number;
@@ -25,7 +32,11 @@ export class ItemDto {
     description: 'Item description',
   })
   @IsNotEmpty({ message: 'The colors cannot be empty' })
-  @IsString({ message: 'The colors must be a string' })
+  @IsString({ message: 'The colors must be a string', each: true })
   @IsArray({ message: 'The colors must be a array' })
   colors: string[];
+
+  @IsOptional()
+  @IsNumber()
+  bindedRoomId?: number;
 }
