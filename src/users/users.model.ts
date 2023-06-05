@@ -1,27 +1,20 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import { Column, PrimaryGeneratedColumn, Entity } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
 
-interface UserCreationAttrs {
-  email: string;
+@Entity('users')
+export class User {
+  @ApiProperty({ example: '1', description: 'Unique id' })
+  @PrimaryGeneratedColumn('increment')
+  public id: number;
+
+  @ApiProperty({ example: 'SDxszSd12', description: 'User password' })
+  @Column({ nullable: false })
   password: string;
-}
-@Table({ tableName: 'users' })
-export class User extends Model<User, UserCreationAttrs> {
-  @Column({
-    type: DataType.INTEGER,
-    unique: true,
-    autoIncrement: true,
-    primaryKey: true,
+
+  @ApiProperty({
+    example: 'shelkovichyaroslav@gmail.com',
+    description: 'User email',
   })
-  id: number;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
-  password: string;
-  @Column({
-    type: DataType.STRING,
-    unique: true,
-    allowNull: false,
-  })
+  @Column({ unique: true, nullable: false })
   email: string;
 }
