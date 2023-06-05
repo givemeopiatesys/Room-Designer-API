@@ -1,14 +1,9 @@
-import {
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/users.model';
 import { LoginUserDto, RegisterUserDto } from './dto/auth.dto';
+import { hashify } from '../Ultils/helper';
 
 @Injectable()
 export class AuthService {
@@ -40,5 +35,14 @@ export class AuthService {
         HttpStatus.FORBIDDEN,
       );
     }
+  }
+  async validateUser(email: string, password: string): Promise<any> {
+    const passwordHash = hashify(password);
+    const user = await this.usersService.findByEmail(email);
+    if (passwordHash === user.password) {
+      const { ...result } = user;
+      return result;
+    }
+    return null;
   }
 }

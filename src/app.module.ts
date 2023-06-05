@@ -28,6 +28,7 @@ import { AuthModule } from './auth/auth.module';
     UsersModule,
     RoomsModule,
     ItemsModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],

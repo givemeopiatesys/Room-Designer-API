@@ -7,12 +7,13 @@ import {
   HttpStatus,
   Param,
   Post,
-  Put,
-} from '@nestjs/common';
+  Put, UseGuards
+} from "@nestjs/common";
 import { UsersService } from './users.service';
 import { UserDto } from './dto/user.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from './users.model';
+import { JwtAuthGuard } from "../auth/guards/jwt.guard";
 
 @ApiTags('Users')
 @Controller('users')
@@ -35,6 +36,7 @@ export class UsersController {
   })
   @Get()
   @HttpCode(HttpStatus.OK)
+  @UseGuards(new JwtAuthGuard())
   getAll() {
     return this.usersService.getAllUsers();
   }
