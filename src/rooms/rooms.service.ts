@@ -9,7 +9,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Room } from './rooms.model';
 import { RoomDto } from './dto/room.dto';
-import { Multer } from 'multer';
 import { extname } from 'path';
 import { saveFile } from 'src/Ultils/file-management';
 import { hashify } from 'src/Ultils/helper';

@@ -28,6 +28,14 @@ export class Item {
   description: string;
 
   @ApiProperty({
+    example: './jpeg',
+    description: 'Путь к файлу изоброжения',
+  })
+  // @Column({ nullable: false })
+  @Column({ nullable: false })
+  imagePath: string;
+
+  @ApiProperty({
     example: '[red,blue,orange]',
     description: 'Colors which can be item',
   })
