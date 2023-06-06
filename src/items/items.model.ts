@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Room } from 'src/rooms/rooms.model';
+import { generatePublicLink } from 'src/Ultils/publicLink';
 
 @Entity('items')
 export class Item {
@@ -31,8 +32,7 @@ export class Item {
     example: './jpeg',
     description: 'Путь к файлу изоброжения',
   })
-  // @Column({ nullable: false })
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   imagePath: string;
 
   @ApiProperty({
@@ -45,4 +45,9 @@ export class Item {
   @ManyToOne(() => Room, (room) => room.items)
   @JoinColumn()
   room: Room;
+
+  @AfterLoad()
+  setImageLinks() {
+    this.imagePath = generatePublicLink(this.imagePath);
+  }
 }

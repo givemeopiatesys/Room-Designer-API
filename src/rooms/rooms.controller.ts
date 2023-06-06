@@ -17,7 +17,7 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RoomsService } from './rooms.service';
 import { Room } from './rooms.model';
-import { RoomDto } from './dto/room.dto';
+import { RoomDto, RoomDtoUpdate } from './dto/room.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Rooms')
@@ -95,7 +95,10 @@ export class RoomsController {
   })
   @Put(':roomId')
   @HttpCode(HttpStatus.OK)
-  updateModelById(@Param('roomId') roomId: number, @Body() roomDto: RoomDto) {
+  updateModelById(
+    @Param('roomId') roomId: number,
+    @Body() roomDto: RoomDtoUpdate,
+  ) {
     return this.roomsService.update(roomId, roomDto);
   }
 

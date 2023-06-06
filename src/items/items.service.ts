@@ -10,6 +10,11 @@ import { Repository } from 'typeorm';
 import { Item } from './items.model';
 import { ItemDto } from './dto/item.dto';
 import { Room } from 'src/rooms/rooms.model';
+import { extname } from 'path';
+import { saveFile } from 'src/Ultils/file-management';
+import { hashify } from 'src/Ultils/helper';
+import { matchAtLeastOne } from 'src/Ultils/matchAtLeastOne';
+import { testAtLeastOne } from 'src/Ultils/test-at-least-one';
 
 @Injectable()
 export class ItemsService {
@@ -44,10 +49,25 @@ export class ItemsService {
     });
   }
 
-  async createItem(itemDto: ItemDto) {
-    await this.isDescriptionExists(itemDto.description);
+  async createItem(itemDto: ItemDto, imageFile: Express.Multer.File) {
+    const uniqueFileName = `${hashify(
+      `${Date.now()}${imageFile.originalname}`,
+    )}${extname(imageFile.originalname)}`;
+
+    imageFile.filename = uniqueFileName;
+
+    saveFile(imageFile);
+
     const item = await this.itemRepository.create(itemDto);
-    return await this.itemRepository.save({ ...item, colors: itemDto.colors });
+
+    const preColors =
+      typeof itemDto.colors === 'string' ? [itemDto.colors] : itemDto.colors;
+
+    return await this.itemRepository.save({
+      ...item,
+      colors: preColors,
+      imagePath: imageFile.filename,
+    });
   }
 
   async getAllItems() {
@@ -64,18 +84,61 @@ export class ItemsService {
 
     throw new NotFoundException(`Item with id = ${itemId} was not found`);
   }
-  async update(itemId: number, itemDto: ItemDto) {
+  async update(
+    itemId: number,
+    itemDto: ItemDto,
+    imageFile: Express.Multer.File,
+  ) {
     const updatedItem = await this.itemRepository.findOne({
       where: { id: itemId },
     });
 
-    if (itemDto.description !== updatedItem.description) {
-      await this.isDescriptionExists(itemDto.description);
+    let newFilePath = '';
+
+    if (imageFile) {
+      if (imageFile.size > 15 * 1024 * 1024) {
+        throw new HttpException(
+          `Файл слишком большой по объёму!`,
+          HttpStatus.CONFLICT,
+        );
+      }
+
+      const fileExtension = extname(imageFile.originalname);
+
+      if (
+        !testAtLeastOne(fileExtension, [
+          '.gif',
+          '.png',
+          '.jpeg',
+          '.jpg',
+          '.webp',
+        ])
+      ) {
+        throw new HttpException(
+          `Неподдерживаемый формат файла! (${fileExtension})`,
+          HttpStatus.CONFLICT,
+        );
+      }
+
+      const uniqueFileName = hashify(
+        `${imageFile.originalname}${Date.now().toString()}`,
+      );
+
+      imageFile.filename = `${uniqueFileName}${extname(
+        imageFile.originalname,
+      )}`;
+
+      saveFile(imageFile);
+
+      newFilePath = imageFile.filename;
     }
 
     if (updatedItem) {
       Object.assign(updatedItem, itemDto);
-      return await this.itemRepository.save(updatedItem);
+      return await this.itemRepository.save({
+        ...updatedItem,
+        ...(newFilePath ? { imagePath: newFilePath } : {}),
+      });
     }
   }
   async delete(itemId: number) {

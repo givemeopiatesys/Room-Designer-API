@@ -9,9 +9,9 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 async function start() {
   const PORT = process.env.PORT;
 
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    cors: true,
-  });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  app.enableCors();
 
   const config = new DocumentBuilder()
     .setTitle('Room Designer')

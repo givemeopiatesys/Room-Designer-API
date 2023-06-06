@@ -2,18 +2,25 @@ import {
   Body,
   Controller,
   Delete,
+  FileTypeValidator,
   Get,
   HttpCode,
   HttpStatus,
+  MaxFileSizeValidator,
   Param,
+  ParseFilePipe,
   Post,
   Put,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ItemsService } from './items.service';
 import { Item } from './items.model';
-import { ItemDto } from './dto/item.dto';
+import { ItemDto, ItemDtoUpdate } from './dto/item.dto';
 import { BindItemToRoomDTO } from './dto/bind.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { matchAtLeastOne } from 'src/Ultils/matchAtLeastOne';
 
 @ApiTags('Items')
 @Controller('items')
@@ -24,10 +31,29 @@ export class ItemsController {
     status: HttpStatus.CREATED,
     type: Item,
   })
+  @UseInterceptors(FileInterceptor('imageFile'))
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() itemDto: ItemDto) {
-    return this.itemsService.createItem(itemDto);
+  create(
+    @Body() itemDto: ItemDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 15 * 1024 * 1024 }),
+          new FileTypeValidator({
+            fileType: matchAtLeastOne([
+              'image/jpeg',
+              'image/png',
+              'image/webp',
+              'image/gif',
+            ]),
+          }),
+        ],
+      }),
+    )
+    imageFile: Express.Multer.File,
+  ) {
+    return this.itemsService.createItem(itemDto, imageFile);
   }
 
   @ApiOperation({ summary: 'Get all items' })
@@ -57,10 +83,15 @@ export class ItemsController {
     status: HttpStatus.OK,
     type: Item,
   })
+  @UseInterceptors(FileInterceptor('imageFile'))
   @Put(':itemId')
   @HttpCode(HttpStatus.OK)
-  updateById(@Param('itemId') itemId: number, @Body() itemDto: ItemDto) {
-    return this.itemsService.update(itemId, itemDto);
+  updateById(
+    @Param('itemId') itemId: number,
+    @Body() itemDto: ItemDtoUpdate,
+    @UploadedFile() imageFile: Express.Multer.File,
+  ) {
+    return this.itemsService.update(itemId, itemDto, imageFile);
   }
 
   @ApiOperation({ summary: 'Update item by id' })
