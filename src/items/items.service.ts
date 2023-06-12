@@ -49,15 +49,21 @@ export class ItemsService {
     });
   }
 
-  async createItem(itemDto: ItemDto, imageFile: Express.Multer.File) {
-    const uniqueFileName = `${hashify(
-      `${Date.now()}${imageFile.originalname}`,
-    )}${extname(imageFile.originalname)}`;
-
-    imageFile.filename = uniqueFileName;
-
-    saveFile(imageFile);
-
+  async createItem(
+    itemDto: ItemDto,
+    imageFile: Express.Multer.File[],
+    glbFile: Express.Multer.File[],
+  ) {
+    const uniqueImageFileName = `${hashify(
+      `${Date.now()}${imageFile[0].originalname}`,
+    )}${extname(imageFile[0].originalname)}`;
+    const uniqueGlbFileName = `${hashify(
+      `${Date.now()}${glbFile[0].originalname}`,
+    )}${extname(glbFile[0].originalname)}`;
+    glbFile[0].filename = uniqueGlbFileName;
+    imageFile[0].filename = uniqueImageFileName;
+    saveFile(imageFile[0]);
+    saveFile(glbFile[0]);
     const item = await this.itemRepository.create(itemDto);
 
     const preColors =
@@ -66,7 +72,8 @@ export class ItemsService {
     return await this.itemRepository.save({
       ...item,
       colors: preColors,
-      imagePath: imageFile.filename,
+      imagePath: imageFile[0].filename,
+      modelPath: glbFile[0].filename,
     });
   }
 

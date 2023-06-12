@@ -12,6 +12,7 @@ import {
   Post,
   Put,
   UploadedFile,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -19,41 +20,41 @@ import { ItemsService } from './items.service';
 import { Item } from './items.model';
 import { ItemDto, ItemDtoUpdate } from './dto/item.dto';
 import { BindItemToRoomDTO } from './dto/bind.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  FileFieldsInterceptor,
+  FileInterceptor,
+} from '@nestjs/platform-express';
 import { matchAtLeastOne } from 'src/Ultils/matchAtLeastOne';
 
 @ApiTags('Items')
 @Controller('items')
 export class ItemsController {
   constructor(private readonly itemsService: ItemsService) {}
+
   @ApiOperation({ summary: 'Create item' })
   @ApiResponse({
     status: HttpStatus.CREATED,
     type: Item,
   })
-  @UseInterceptors(FileInterceptor('imageFile'))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'imageFile', maxCount: 1 },
+      { name: 'glbFile', maxCount: 1 },
+    ]),
+  )
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(
     @Body() itemDto: ItemDto,
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 15 * 1024 * 1024 }),
-          new FileTypeValidator({
-            fileType: matchAtLeastOne([
-              'image/jpeg',
-              'image/png',
-              'image/webp',
-              'image/gif',
-            ]),
-          }),
-        ],
-      }),
-    )
-    imageFile: Express.Multer.File,
+    @UploadedFiles()
+    files: { imageFile: Express.Multer.File[]; glbFile: Express.Multer.File[] },
+    // imageFile: Express.Multer.File
   ) {
-    return this.itemsService.createItem(itemDto, imageFile);
+    return this.itemsService.createItem(
+      itemDto,
+      files.imageFile,
+      files.glbFile,
+    );
   }
 
   @ApiOperation({ summary: 'Get all items' })

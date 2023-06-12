@@ -29,6 +29,14 @@ export class Item {
   description: string;
 
   @ApiProperty({
+    example: './room_model_1',
+    description: 'Путь к файлу модели',
+  })
+  // @Column({ nullable: false })
+  @Column({ nullable: true })
+  modelPath: string;
+
+  @ApiProperty({
     example: './jpeg',
     description: 'Путь к файлу изоброжения',
   })

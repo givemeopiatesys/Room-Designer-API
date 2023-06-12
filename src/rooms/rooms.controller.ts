@@ -18,7 +18,10 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RoomsService } from './rooms.service';
 import { Room } from './rooms.model';
 import { RoomDto, RoomDtoUpdate } from './dto/room.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  FileFieldsInterceptor,
+  FileInterceptor,
+} from '@nestjs/platform-express';
 
 @ApiTags('Rooms')
 @Controller('rooms')

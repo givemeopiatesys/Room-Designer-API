@@ -10,6 +10,7 @@ import { Room } from './rooms/rooms.model';
 import { Item } from './items/items.model';
 import { AuthModule } from './auth/auth.module';
 import { ReviewsModule } from './reviews/reviews.module';
+import { NewsModule } from './news/news.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -30,6 +31,7 @@ import { ReviewsModule } from './reviews/reviews.module';
     RoomsModule,
     ItemsModule,
     ReviewsModule,
+    NewsModule,
     AuthModule,
   ],
   controllers: [],

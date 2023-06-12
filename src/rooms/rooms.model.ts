@@ -35,7 +35,7 @@ export class Room {
     description: 'Путь к файлу модели',
   })
   // @Column({ nullable: false })
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   modelPath: string;
 
   @OneToMany(() => Item, (item) => item.room)
